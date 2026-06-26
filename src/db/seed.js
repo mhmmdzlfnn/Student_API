@@ -18,8 +18,8 @@ async function seed() {
   await pool.query(
     'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
     [
-      'admin', 'admin@studentapi.com', adminPassword, 'admin',
-      'staff', 'staff@studentapi.com', staffPassword, 'staff'
+      'admin', 'admin@academia.com', adminPassword, 'admin',
+      'staff', 'staff@academia.com', staffPassword, 'staff'
     ]
   );
   console.log('seeded users: admin (adminpassword), staff (staffpassword)');

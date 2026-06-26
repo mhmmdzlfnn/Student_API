@@ -27,7 +27,7 @@ const router = express.Router();
  *                 example: testuser
  *               email:
  *                 type: string
- *                 example: test@studentapi.com
+ *                 example: test@academia.com
  *               password:
  *                 type: string
  *                 example: password123
@@ -61,7 +61,7 @@ router.post('/register', validateBody(registerSchema), register);
  *             properties:
  *               email:
  *                 type: string
- *                 example: admin@studentapi.com
+ *                 example: admin@academia.com
  *               password:
  *                 type: string
  *                 example: adminpassword

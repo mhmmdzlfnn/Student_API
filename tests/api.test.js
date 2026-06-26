@@ -18,7 +18,7 @@ describe('Student API Integration Tests', () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'admin@studentapi.com',
+          email: 'admin@academia.com',
           password: 'adminpassword'
         });
 
@@ -33,7 +33,7 @@ describe('Student API Integration Tests', () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'staff@studentapi.com',
+          email: 'staff@academia.com',
           password: 'staffpassword'
         });
 
@@ -48,7 +48,7 @@ describe('Student API Integration Tests', () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'admin@studentapi.com',
+          email: 'admin@academia.com',
           password: 'wrongpassword'
         });
 

@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "7bf3b3ef-88a2-4a11-b0db-6e79cc860538",
-		"name": "Student API",
-		"description": "Postman collection for testing the Student API. Make sure to set the `token` variable after logging in.",
+		"name": "Academia API",
+		"description": "Postman collection for testing the Academia API. Make sure to set the `token` variable after logging in.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"johndoe\",\n    \"email\": \"john@studentapi.com\",\n    \"password\": \"password123\",\n    \"role\": \"staff\"\n}",
+							"raw": "{\n    \"username\": \"johndoe\",\n    \"email\": \"john@academia.com\",\n    \"password\": \"password123\",\n    \"role\": \"staff\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -58,7 +58,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"admin@studentapi.com\",\n    \"password\": \"adminpassword\"\n}",
+							"raw": "{\n    \"email\": \"admin@academia.com\",\n    \"password\": \"adminpassword\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -100,7 +100,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"staff@studentapi.com\",\n    \"password\": \"staffpassword\"\n}",
+							"raw": "{\n    \"email\": \"staff@academia.com\",\n    \"password\": \"staffpassword\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"

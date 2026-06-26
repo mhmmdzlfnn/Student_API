@@ -1,4 +1,4 @@
-# Student API - Proyek Backend Developer
+# Academia - Proyek Backend Developer
 
 Sebuah RESTful API profesional untuk manajemen mahasiswa, mata kuliah, dan pendaftaran mata kuliah (enrollments). Dibangun dengan **Node.js**, **Express.js**, dan **MySQL/MariaDB**.
 
@@ -104,8 +104,8 @@ Masukkan data pengujian untuk pengguna (Admin & Staff), mata kuliah, mahasiswa, 
 npm run seed
 ```
 **Akun Uji Coba yang Dibuat:**
-- **Admin**: `admin@studentapi.com` (Password: `adminpassword`)
-- **Staff**: `staff@studentapi.com` (Password: `staffpassword`)
+- **Admin**: `admin@academia.com` (Password: `adminpassword`)
+- **Staff**: `staff@academia.com` (Password: `staffpassword`)
 
 ---
 
