@@ -7,7 +7,7 @@ export const register = async (req, res, next) => {
     const { username, email, password, role } = req.body;
 
     // Check if email already exists
-    const [existingEmail] = await pool.query('SELECT id FROM users WHERE email = ?', [email]);
+    const { rows: existingEmail } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
     if (existingEmail.length > 0) {
       return res.status(400).json({
         status: 'fail',
@@ -16,7 +16,7 @@ export const register = async (req, res, next) => {
     }
 
     // Check if username already exists
-    const [existingUsername] = await pool.query('SELECT id FROM users WHERE username = ?', [username]);
+    const { rows: existingUsername } = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
     if (existingUsername.length > 0) {
       return res.status(400).json({
         status: 'fail',
@@ -30,8 +30,8 @@ export const register = async (req, res, next) => {
 
     // Save user (default role is staff unless admin is specified)
     const userRole = role === 'admin' ? 'admin' : 'staff';
-    const [result] = await pool.query(
-      'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+    const { rows } = await pool.query(
+      'INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id',
       [username, email, hashedPassword, userRole]
     );
 
@@ -39,7 +39,7 @@ export const register = async (req, res, next) => {
       status: 'success',
       message: 'User registered successfully',
       data: {
-        id: result.insertId,
+        id: rows[0].id,
         username,
         email,
         role: userRole
@@ -55,7 +55,7 @@ export const login = async (req, res, next) => {
     const { email, password } = req.body;
 
     // Find user by email
-    const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const { rows: users } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     if (users.length === 0) {
       return res.status(401).json({
         status: 'fail',
@@ -100,7 +100,7 @@ export const login = async (req, res, next) => {
 export const getProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const [users] = await pool.query('SELECT id, username, email, role, created_at FROM users WHERE id = ?', [userId]);
+    const { rows: users } = await pool.query('SELECT id, username, email, role, created_at FROM users WHERE id = $1', [userId]);
     
     if (users.length === 0) {
       return res.status(404).json({

@@ -16,7 +16,7 @@ async function seed() {
   const staffPassword = await bcrypt.hash('staffpassword', salt);
 
   await pool.query(
-    'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?), (?, ?, ?, ?)',
+    'INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8)',
     [
       'admin', 'admin@academia.com', adminPassword, 'admin',
       'staff', 'staff@academia.com', staffPassword, 'staff'
@@ -26,7 +26,7 @@ async function seed() {
 
   // 3. Seed Students
   await pool.query(
-    'INSERT INTO students (nim, name, email, phone, major) VALUES (?, ?, ?, ?, ?), (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)',
+    'INSERT INTO students (nim, name, email, phone, major) VALUES ($1, $2, $3, $4, $5), ($6, $7, $8, $9, $10), ($11, $12, $13, $14, $15)',
     [
       '10112001', 'Budi Santoso', 'budi@example.com', '08123456789', 'Informatics',
       '10112002', 'Siti Rahma', 'siti@example.com', '08234567890', 'Information Systems',
@@ -37,7 +37,7 @@ async function seed() {
 
   // 4. Seed Courses
   await pool.query(
-    'INSERT INTO courses (code, name, credits) VALUES (?, ?, ?), (?, ?, ?), (?, ?, ?)',
+    'INSERT INTO courses (code, name, credits) VALUES ($1, $2, $3), ($4, $5, $6), ($7, $8, $9)',
     [
       'IF-101', 'Introduction to Programming', 3,
       'SI-201', 'Database Systems', 4,
@@ -47,8 +47,8 @@ async function seed() {
   console.log('seeded courses: 3 courses added');
 
   // Get student and course IDs
-  const [students] = await pool.query('SELECT id FROM students');
-  const [courses] = await pool.query('SELECT id FROM courses');
+  const { rows: students } = await pool.query('SELECT id FROM students');
+  const { rows: courses } = await pool.query('SELECT id FROM courses');
 
   const budiId = students[0].id;
   const sitiId = students[1].id;
@@ -60,7 +60,7 @@ async function seed() {
 
   // 5. Seed Enrollments
   await pool.query(
-    'INSERT INTO enrollments (student_id, course_id, enrollment_date, semester) VALUES (?, ?, ?, ?), (?, ?, ?, ?), (?, ?, ?, ?)',
+    'INSERT INTO enrollments (student_id, course_id, enrollment_date, semester) VALUES ($1, $2, $3, $4), ($5, $6, $7, $8), ($9, $10, $11, $12)',
     [
       budiId, progId, '2026-02-15', 'Odd 2025/2026',
       budiId, dbId, '2026-02-15', 'Odd 2025/2026',

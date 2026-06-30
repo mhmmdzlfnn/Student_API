@@ -3,7 +3,7 @@ import pool from '../config/db.js';
 // Get all courses
 export const getAllCourses = async (req, res, next) => {
   try {
-    const [courses] = await pool.query('SELECT * FROM courses ORDER BY code ASC');
+    const { rows: courses } = await pool.query('SELECT * FROM courses ORDER BY code ASC');
     res.status(200).json({
       status: 'success',
       data: {
@@ -19,7 +19,7 @@ export const getAllCourses = async (req, res, next) => {
 export const getCourseById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const [courses] = await pool.query('SELECT * FROM courses WHERE id = ?', [id]);
+    const { rows: courses } = await pool.query('SELECT * FROM courses WHERE id = $1', [id]);
     
     if (courses.length === 0) {
       return res.status(404).json({
@@ -45,7 +45,7 @@ export const createCourse = async (req, res, next) => {
     const { code, name, credits } = req.body;
 
     // Check if course code already exists
-    const [existingCode] = await pool.query('SELECT id FROM courses WHERE code = ?', [code]);
+    const { rows: existingCode } = await pool.query('SELECT id FROM courses WHERE code = $1', [code]);
     if (existingCode.length > 0) {
       return res.status(400).json({
         status: 'fail',
@@ -53,8 +53,8 @@ export const createCourse = async (req, res, next) => {
       });
     }
 
-    const [result] = await pool.query(
-      'INSERT INTO courses (code, name, credits) VALUES (?, ?, ?)',
+    const { rows } = await pool.query(
+      'INSERT INTO courses (code, name, credits) VALUES ($1, $2, $3) RETURNING id',
       [code, name, credits]
     );
 
@@ -62,7 +62,7 @@ export const createCourse = async (req, res, next) => {
       status: 'success',
       message: 'Course created successfully',
       data: {
-        id: result.insertId,
+        id: rows[0].id,
         code,
         name,
         credits
@@ -79,7 +79,7 @@ export const updateCourse = async (req, res, next) => {
     const { id } = req.params;
     const { code, name, credits } = req.body;
 
-    const [courses] = await pool.query('SELECT * FROM courses WHERE id = ?', [id]);
+    const { rows: courses } = await pool.query('SELECT * FROM courses WHERE id = $1', [id]);
     if (courses.length === 0) {
       return res.status(404).json({
         status: 'fail',
@@ -91,7 +91,7 @@ export const updateCourse = async (req, res, next) => {
 
     // Check course code duplicate if code is being changed
     if (code && code !== currentCourse.code) {
-      const [existingCode] = await pool.query('SELECT id FROM courses WHERE code = ?', [code]);
+      const { rows: existingCode } = await pool.query('SELECT id FROM courses WHERE code = $1', [code]);
       if (existingCode.length > 0) {
         return res.status(400).json({
           status: 'fail',
@@ -107,7 +107,7 @@ export const updateCourse = async (req, res, next) => {
     };
 
     await pool.query(
-      'UPDATE courses SET code = ?, name = ?, credits = ? WHERE id = ?',
+      'UPDATE courses SET code = $1, name = $2, credits = $3 WHERE id = $4',
       [updatedCourse.code, updatedCourse.name, updatedCourse.credits, id]
     );
 
@@ -129,7 +129,7 @@ export const deleteCourse = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const [courses] = await pool.query('SELECT id FROM courses WHERE id = ?', [id]);
+    const { rows: courses } = await pool.query('SELECT id FROM courses WHERE id = $1', [id]);
     if (courses.length === 0) {
       return res.status(404).json({
         status: 'fail',
@@ -137,7 +137,7 @@ export const deleteCourse = async (req, res, next) => {
       });
     }
 
-    await pool.query('DELETE FROM courses WHERE id = ?', [id]);
+    await pool.query('DELETE FROM courses WHERE id = $1', [id]);
 
     res.status(200).json({
       status: 'success',
@@ -154,7 +154,7 @@ export const enrollStudent = async (req, res, next) => {
     const { student_id, course_id, enrollment_date, semester } = req.body;
 
     // 1. Verify student exists
-    const [students] = await pool.query('SELECT id FROM students WHERE id = ?', [student_id]);
+    const { rows: students } = await pool.query('SELECT id FROM students WHERE id = $1', [student_id]);
     if (students.length === 0) {
       return res.status(404).json({
         status: 'fail',
@@ -163,7 +163,7 @@ export const enrollStudent = async (req, res, next) => {
     }
 
     // 2. Verify course exists
-    const [courses] = await pool.query('SELECT id FROM courses WHERE id = ?', [course_id]);
+    const { rows: courses } = await pool.query('SELECT id FROM courses WHERE id = $1', [course_id]);
     if (courses.length === 0) {
       return res.status(404).json({
         status: 'fail',
@@ -172,8 +172,8 @@ export const enrollStudent = async (req, res, next) => {
     }
 
     // 3. Verify if student is already enrolled in this course
-    const [existingEnrollment] = await pool.query(
-      'SELECT id FROM enrollments WHERE student_id = ? AND course_id = ?',
+    const { rows: existingEnrollment } = await pool.query(
+      'SELECT id FROM enrollments WHERE student_id = $1 AND course_id = $2',
       [student_id, course_id]
     );
     if (existingEnrollment.length > 0) {
@@ -184,8 +184,8 @@ export const enrollStudent = async (req, res, next) => {
     }
 
     // 4. Perform insertion
-    const [result] = await pool.query(
-      'INSERT INTO enrollments (student_id, course_id, enrollment_date, semester) VALUES (?, ?, ?, ?)',
+    const { rows } = await pool.query(
+      'INSERT INTO enrollments (student_id, course_id, enrollment_date, semester) VALUES ($1, $2, $3, $4) RETURNING id',
       [student_id, course_id, enrollment_date, semester]
     );
 
@@ -193,7 +193,7 @@ export const enrollStudent = async (req, res, next) => {
       status: 'success',
       message: 'Student enrolled in course successfully',
       data: {
-        id: result.insertId,
+        id: rows[0].id,
         student_id,
         course_id,
         enrollment_date,
@@ -211,7 +211,7 @@ export const getStudentCourses = async (req, res, next) => {
     const { id } = req.params; // student_id
 
     // Check if student exists
-    const [students] = await pool.query('SELECT id, name, nim FROM students WHERE id = ?', [id]);
+    const { rows: students } = await pool.query('SELECT id, name, nim FROM students WHERE id = $1', [id]);
     if (students.length === 0) {
       return res.status(404).json({
         status: 'fail',
@@ -226,11 +226,11 @@ export const getStudentCourses = async (req, res, next) => {
       SELECT c.id, c.code, c.name, c.credits, e.enrollment_date, e.semester, e.id AS enrollment_id
       FROM courses c
       INNER JOIN enrollments e ON c.id = e.course_id
-      WHERE e.student_id = ?
+      WHERE e.student_id = $1
       ORDER BY e.enrollment_date DESC
     `;
 
-    const [courses] = await pool.query(query, [id]);
+    const { rows: courses } = await pool.query(query, [id]);
 
     res.status(200).json({
       status: 'success',
